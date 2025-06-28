@@ -25,7 +25,8 @@ def summary_statistics(df: pd.DataFrame):
 
 def plot_numerical_distributions(df: pd.DataFrame) -> None:
     """
-    Histogram plots of numerical features with KDE, mean, and median lines — arranged in subplots.
+    Histogram plots of numerical features with KDE, mean, and median lines
+    — arranged in subplots.
     """
     numerical_data = df.select_dtypes(include=['number'])
     numerical_cols = numerical_data.columns
@@ -35,7 +36,10 @@ def plot_numerical_distributions(df: pd.DataFrame) -> None:
     num_rows = math.ceil(len(numerical_cols) / num_cols)
 
     # Subplots setup
-    fig, axes = plt.subplots(nrows=num_rows, ncols=num_cols, figsize=(6 * num_cols, 4 * num_rows))
+    fig, axes = plt.subplots(
+        nrows=num_rows, ncols=num_cols,
+        figsize=(6 * num_cols, 4 * num_rows)
+    )
     axes = axes.flatten()
 
     for idx, column in enumerate(numerical_cols):
@@ -47,8 +51,12 @@ def plot_numerical_distributions(df: pd.DataFrame) -> None:
         axes[idx].set_title(f'Distribution of {column}', fontsize=10)
         axes[idx].set_xlabel(column, fontsize=9)
         axes[idx].set_ylabel('Frequency', fontsize=9)
-        axes[idx].axvline(mean, color='black', linestyle='--', linewidth=1, label='Mean')
-        axes[idx].axvline(median, color='red', linestyle='-', linewidth=1, label='Median')
+        axes[idx].axvline(
+            mean, color='black', linestyle='--', linewidth=1, label='Mean'
+        )
+        axes[idx].axvline(
+            median, color='red', linestyle='-', linewidth=1, label='Median'
+        )
         axes[idx].legend()
 
     # Remove any unused axes
@@ -59,11 +67,12 @@ def plot_numerical_distributions(df: pd.DataFrame) -> None:
     plt.show()
 
 
-def plot_categorical_distributions(df: pd.DataFrame, cat_cols: List[str], top_n: int = 10, max_unique: int = 30):
+def plot_categorical_distributions(df: pd.DataFrame, cat_cols: List[str],
+                                   top_n: int = 10, max_unique: int = 30):
     """
     Plot top N category counts for each categorical feature.
     Skips columns with too many unique values for better performance.
-    
+
     Parameters:
         df (pd.DataFrame): The dataset
         cat_cols (List[str]): List of categorical column names
@@ -73,9 +82,11 @@ def plot_categorical_distributions(df: pd.DataFrame, cat_cols: List[str], top_n:
     for col in cat_cols:
         unique_vals = df[col].nunique()
         if unique_vals > max_unique:
-            print(f"⏩ Skipping '{col}' – {unique_vals} unique values (too high)")
+            print(
+                f"⏩ Skipping '{col}' – {unique_vals} unique values (too high)"
+            )
             continue
-        
+
         plt.figure(figsize=(6, 4))
         df[col].value_counts().nlargest(top_n).plot(kind='bar', color='coral')
         plt.title(f'Top {top_n} {col} Categories')
@@ -117,7 +128,8 @@ def outlier_detection(df: pd.DataFrame) -> None:
 
 def count_outliers(df: pd.DataFrame) -> None:
     """
-    A function that counts the number of outliers in numerical columns. The amount of data that are outliers and also gives the cut-off point.
+    A function that counts the number of outliers in numerical columns.
+    The amount of data that are outliers and also gives the cut-off point.
     The cut off points being defined as:
         - lowerbound = Q1 - 1.5 * IQR
         - upperbound = Q3 + 1.5 * IQR
@@ -136,16 +148,21 @@ def count_outliers(df: pd.DataFrame) -> None:
     lower_bound = quartile_one - 1.5 * iqr
 
     # count all the outliers for the respective columns
-    outliers = {"Columns" : [], "Num. of Outliers": []}
+    outliers = {"Columns": [], "Num. of Outliers": []}
     for column in lower_bound.keys():
-        column_outliers = df[(df[column] < lower_bound[column]) | (df[column] > upper_bound[column])]
+        column_outliers = df[
+            (df[column] < lower_bound[column]) |
+            (df[column] > upper_bound[column])
+        ]
         count = column_outliers.shape[0]
 
         outliers["Columns"].append(column)
         outliers["Num. of Outliers"].append(count)
 
     outliers = pd.DataFrame.from_dict(outliers).sort_values(by='Num. of Outliers')
-    ax = sns.barplot(outliers, x='Columns', y='Num. of Outliers', palette='husl')
+    ax = sns.barplot(
+        outliers, x='Columns', y='Num. of Outliers', palette='husl'
+    )
     ax.set_title("Plot of Outlier Counts in Numerical Columns", pad=20)
     ax.set_xlabel("Numerical Columns", weight='bold')
     ax.set_ylabel("Num. of Outliers", weight="bold")
@@ -158,8 +175,13 @@ def count_outliers(df: pd.DataFrame) -> None:
         y_coordinate = patch.get_height()
 
         # get the value of the coordinate
-        value = outliers[outliers['Columns'] == columns[idx]]['Num. of Outliers'].values[0]
-        ax.text(x=x_coordinate, y=y_coordinate, s=value, ha='center', va='bottom', weight='bold')
-    
+        value = outliers[
+            outliers['Columns'] == columns[idx]
+        ]['Num. of Outliers'].values[0]
+        ax.text(
+            x=x_coordinate, y=y_coordinate, s=value, ha='center',
+            va='bottom', weight='bold'
+        )
+
     plt.tight_layout()
     plt.show()

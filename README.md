@@ -1,13 +1,93 @@
-# Bank_Credit_Scoring
-End-to-End Implementation for Building, Deploying, and Automating a Credit Risk Model
 
-## Credit Scoring Business Understanding
+# Credit Risk Probability Model for Alternative Data
 
-### How does the Basel II Accord's emphasis on risk measurement influence our need for an interpretable and well-documented model?
-The Basel II Accord requires financial institutions to rigorously measure and manage credit risk, emphasizing transparency, accountability, and regulatory compliance. This means our credit scoring model must be interpretable and well-documented, allowing stakeholders—including regulators, auditors, and business leaders—to understand how risk is assessed and why decisions are made. Interpretability ensures that risk factors and model outputs can be explained, justified, and audited, which is essential for regulatory approval and for building trust in the model's predictions.
+## 🚀 Project Overview
 
-### Since we lack a direct "default" label, why is creating a proxy variable necessary, and what are the potential business risks of making predictions based on this proxy?
-In the absence of a direct "default" label, we must engineer a proxy variable—such as one based on customer behavioral patterns (e.g., Recency, Frequency, Monetary value)—to categorize users as high or low risk. This proxy enables us to train and validate our model. However, relying on a proxy introduces risks: if the proxy does not accurately reflect true default behavior, the model may misclassify customers, leading to suboptimal lending decisions, increased defaults, or missed business opportunities. It is crucial to validate the proxy's relevance and monitor model performance over time.
+This project is developed for **Bati Bank** in collaboration with a leading eCommerce company to enable a **Buy-Now-Pay-Later (BNPL)** service. The core business objective is to build a robust credit scoring model that estimates the likelihood of customer default using **alternative behavioral data** from the eCommerce platform.
 
-### What are the key trade-offs between using a simple, interpretable model (like Logistic Regression with WoE) versus a complex, high-performance model (like Gradient Boosting) in a regulated financial context?
-Simple models like Logistic Regression with Weight of Evidence (WoE) are highly interpretable, making them easier to explain to regulators and stakeholders, and to audit for compliance. However, they may not capture complex patterns in the data, potentially limiting predictive performance. Complex models like Gradient Boosting can achieve higher accuracy by modeling nonlinear relationships, but they are less transparent and harder to interpret. In regulated environments, the trade-off is between maximizing predictive power and ensuring the model is explainable, auditable, and compliant with regulatory standards.
+Given the absence of traditional credit history, we leverage **transactional patterns**, such as Recency, Frequency, and Monetary (RFM) data, to engineer features and train a predictive model. This model will ultimately assign a **risk probability score**, a **credit score**, and guide loan amount and term decisions.
+
+---
+
+## 📘 Credit Scoring Business Understanding
+
+### 1. Basel II and the Need for Interpretability
+
+The **Basel II Accord** emphasizes accurate and transparent measurement of credit risk. In line with this, our credit scoring model must be interpretable and well-documented to support:
+
+* Regulatory review
+* Auditability
+* Internal governance
+
+An interpretable model builds trust with stakeholders and ensures alignment with capital adequacy requirements.
+
+### 2. Importance of a Proxy Variable
+
+Since our dataset lacks an explicit "default" label, we must construct a **proxy variable** (e.g., based on abnormal transaction behavior, inactivity, or refund frequency) to simulate loan default behavior.
+
+⚠️ **Risks of using a proxy:**
+
+* **False assumptions:** The proxy may not capture true default intent.
+* **Bias propagation:** Any proxy bias will be inherited by the model.
+* **Business impact:** Could lead to misclassifying customers, affecting profits or reputational trust.
+
+### 3. Simple vs. Complex Models in Regulated Environments
+
+| Criteria              | Logistic Regression (WoE) | Gradient Boosting (GBM)          |
+| --------------------- | ------------------------- | -------------------------------- |
+| Interpretability      | High                      | Low                              |
+| Regulatory acceptance | Preferred                 | Requires explanation (SHAP/LIME) |
+| Performance           | Moderate                  | High                             |
+| Deployment complexity | Low                       | Medium to High                   |
+
+Choosing the right model depends on balancing **performance vs. interpretability**, especially in highly regulated financial environments.
+
+---
+
+## 🗂️ Project Structure Overview
+
+```
+credit-risk-model/
+├── .github/workflows/ci.yml     # CI/CD Pipeline
+├── data/
+│   ├── raw/                     # Original data (excluded via .gitignore)
+│   └── processed/               # Cleaned and transformed data
+├── notebooks/
+│   └── 1.0-eda.ipynb            # Exploratory data analysis
+├── src/
+│   ├── __init__.py
+│   ├── data_processing.py       # EDA utilities
+│   └── feature_engineering.py   # Feature engineering logic
+├── tests/
+│   └── test_data_processing.py  # Unit tests
+├── requirements.txt             # Dependencies
+├── Dockerfile
+├── docker-compose.yml
+├── .gitignore
+└── README.md
+```
+
+---
+
+## 📊 Interim Task Progress
+
+### ✅ Task 1 – Credit Scoring Business Understanding
+
+* Basel II principles researched and applied
+* Proxy risk logic outlined
+* Trade-offs between model types discussed
+
+### ✅ Task 2 – Exploratory Data Analysis (EDA)
+
+* Numerical/categorical distributions visualized using subplots
+* Missing values and outliers identified and quantified
+* Correlation matrix plotted for numerical fields
+
+🔄 Work in progress:
+
+* Finalizing categorical encoding strategies
+* Planning proxy target creation logic
+
+> ⚡ Next: Begin Task 3 (Feature Engineering) and define proxy variable for supervised learning.
+
+---
