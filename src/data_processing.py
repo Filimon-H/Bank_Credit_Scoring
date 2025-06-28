@@ -59,15 +59,6 @@ def plot_numerical_distributions(df: pd.DataFrame) -> None:
     plt.show()
 
 
-
-#def plot_numerical_distributions(df: pd.DataFrame, num_cols: List[str]):
-#    """Plot distributions for numerical features."""
-#    for col in num_cols:
-#        plt.figure(figsize=(6, 4))
-#        sns.histplot(df[col].dropna(), kde=True)
-#        plt.title(f'Distribution of {col}')
-#        plt.show()
-
 def plot_categorical_distributions(df: pd.DataFrame, cat_cols: List[str], top_n: int = 10, max_unique: int = 30):
     """
     Plot top N category counts for each categorical feature.
@@ -94,11 +85,6 @@ def plot_categorical_distributions(df: pd.DataFrame, cat_cols: List[str], top_n:
         plt.show()
 
 
-
-
-
-
-
 def correlation_analysis(df: pd.DataFrame, num_cols: List[str]):
     """Plot correlation heatmap for numerical features."""
     plt.figure(figsize=(10, 8))
@@ -115,10 +101,65 @@ def missing_values(df: pd.DataFrame):
     print(missing[missing > 0])
 
 
-def outlier_detection(df: pd.DataFrame, num_cols: List[str]):
-    """Box plots for outlier detection in numerical features."""
-    for col in num_cols:
-        plt.figure(figsize=(6, 4))
-        sns.boxplot(x=df[col])
-        plt.title(f'Boxplot of {col}')
-        plt.show()
+def outlier_detection(df: pd.DataFrame) -> None:
+    """
+    A function that performs outlier detection by plotting a box plot.
+    """
+    # create the box plots of the numeric data
+    ax = sns.boxplot(data=df, palette='husl')
+    ax.set_title("Box-plot of Numerical Variables", pad=30, fontweight='bold')
+    ax.set_xlabel("Numerical Columns", fontweight='bold', labelpad=10)
+    ax.set_ylabel("Values", fontweight='bold', labelpad=10)
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.show()
+
+
+def count_outliers(df: pd.DataFrame) -> None:
+    """
+    A function that counts the number of outliers in numerical columns. The amount of data that are outliers and also gives the cut-off point.
+    The cut off points being defined as:
+        - lowerbound = Q1 - 1.5 * IQR
+        - upperbound = Q3 + 1.5 * IQR
+    """
+    # get the numeric data
+    numerical_columns = list(df._get_numeric_data().columns)
+    numerical_data = df[numerical_columns]
+
+    # obtain the Q1, Q3 and IQR(Inter-Quartile Range)
+    quartile_one = numerical_data.quantile(0.25)
+    quartile_three = numerical_data.quantile(0.75)
+    iqr = quartile_three - quartile_one
+
+    # obtain the upperbound and lowerbound values for each column
+    upper_bound = quartile_three + 1.5 * iqr
+    lower_bound = quartile_one - 1.5 * iqr
+
+    # count all the outliers for the respective columns
+    outliers = {"Columns" : [], "Num. of Outliers": []}
+    for column in lower_bound.keys():
+        column_outliers = df[(df[column] < lower_bound[column]) | (df[column] > upper_bound[column])]
+        count = column_outliers.shape[0]
+
+        outliers["Columns"].append(column)
+        outliers["Num. of Outliers"].append(count)
+
+    outliers = pd.DataFrame.from_dict(outliers).sort_values(by='Num. of Outliers')
+    ax = sns.barplot(outliers, x='Columns', y='Num. of Outliers', palette='husl')
+    ax.set_title("Plot of Outlier Counts in Numerical Columns", pad=20)
+    ax.set_xlabel("Numerical Columns", weight='bold')
+    ax.set_ylabel("Num. of Outliers", weight="bold")
+    ax.tick_params(axis='x', labelrotation=45)
+
+    columns = outliers['Columns'].unique()
+    for idx, patch in enumerate(ax.patches):
+        # get the coordinates to write the values
+        x_coordinate = patch.get_x() + patch.get_width() / 2
+        y_coordinate = patch.get_height()
+
+        # get the value of the coordinate
+        value = outliers[outliers['Columns'] == columns[idx]]['Num. of Outliers'].values[0]
+        ax.text(x=x_coordinate, y=y_coordinate, s=value, ha='center', va='bottom', weight='bold')
+    
+    plt.tight_layout()
+    plt.show()
