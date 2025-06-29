@@ -105,6 +105,70 @@ def correlation_analysis(df: pd.DataFrame, num_cols: List[str]):
     plt.show()
 
 
+def analyze_missing_data(df: pd.DataFrame) -> None:
+    """
+    Comprehensive missing data analysis with counts, percentages, and visualizations.
+    """
+    # Calculate missing data
+    missing_counts = df.isnull().sum()
+    missing_percentages = (missing_counts / len(df)) * 100
+    
+    # Create summary DataFrame
+    missing_summary = pd.DataFrame({
+        'Column': missing_counts.index,
+        'Missing_Count': missing_counts.values,
+        'Missing_Percentage': missing_percentages.values
+    }).sort_values('Missing_Percentage', ascending=False)
+    
+    # Filter columns with missing data
+    missing_data = missing_summary[missing_summary['Missing_Count'] > 0]
+    
+    print("=== MISSING DATA ANALYSIS ===")
+    print(f"Total rows in dataset: {len(df)}")
+    print(f"Columns with missing data: {len(missing_data)}")
+    print(f"Total missing values: {missing_data['Missing_Count'].sum()}")
+    print(f"Overall missing percentage: {(missing_data['Missing_Count'].sum() / (len(df) * len(df.columns))) * 100:.2f}%")
+    
+    if len(missing_data) > 0:
+        print("\n=== MISSING DATA BY COLUMN ===")
+        print(missing_data.to_string(index=False))
+        
+        # Visualizations
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
+        
+        # Bar plot of missing counts
+        missing_data.plot(
+            x='Column', y='Missing_Count', kind='bar', ax=ax1, color='red'
+        )
+        ax1.set_title('Missing Values Count by Column')
+        ax1.set_xlabel('Columns')
+        ax1.set_ylabel('Missing Count')
+        ax1.tick_params(axis='x', rotation=45)
+        
+        # Bar plot of missing percentages
+        missing_data.plot(
+            x='Column', y='Missing_Percentage', kind='bar', ax=ax2, color='orange'
+        )
+        ax2.set_title('Missing Values Percentage by Column')
+        ax2.set_xlabel('Columns')
+        ax2.set_ylabel('Missing Percentage (%)')
+        ax2.tick_params(axis='x', rotation=45)
+        
+        plt.tight_layout()
+        plt.show()
+        
+        # Missing data heatmap
+        plt.figure(figsize=(10, 6))
+        sns.heatmap(df.isnull(), cbar=True, yticklabels=False, cmap='viridis')
+        plt.title('Missing Data Heatmap')
+        plt.xlabel('Columns')
+        plt.ylabel('Rows')
+        plt.show()
+        
+    else:
+        print("\n✅ No missing data found in the dataset!")
+
+
 def missing_values(df: pd.DataFrame):
     """Display missing value counts per column."""
     missing = df.isnull().sum()
