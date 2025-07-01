@@ -249,3 +249,8 @@ def count_outliers(df: pd.DataFrame) -> None:
 
     plt.tight_layout()
     plt.show()
+
+
+
+
+
