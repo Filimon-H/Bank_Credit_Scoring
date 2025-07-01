@@ -83,11 +83,103 @@ credit-risk-model/
 * Missing values and outliers identified and quantified
 * Correlation matrix plotted for numerical fields
 
-🔄 Work in progress:
 
-* Finalizing categorical encoding strategies
-* Planning proxy target creation logic
+🧠 Task 3 – Feature Engineering & Proxy Target Creation
+Constructed Recency, Frequency, and Monetary (RFM) features using transaction history.
 
-> ⚡ Next: Begin Task 3 (Feature Engineering) and define proxy variable for supervised learning.
+Engineered behavioral features such as:
 
----
+days_since_last_transaction
+
+total_transaction_count
+
+average_transaction_amount
+
+transaction_volume_per_channel
+
+Handled high-cardinality categorical features with frequency or target encoding.
+
+✅ Proxy Target Variable
+Since explicit default labels were missing:
+
+Constructed a proxy target based on:
+
+Inactivity after high RFM scores
+
+Abnormal transaction refund patterns
+
+Validated proxy label distribution and balanced the dataset using undersampling.
+
+✅ Ready to use engineered features and proxy variable for model training.
+
+🤖 Task 4 – Model Training, Evaluation, and Tracking
+Trained multiple supervised classifiers:
+
+Logistic Regression (baseline)
+
+Random Forest (tuned via RandomizedSearchCV)
+
+✅ Evaluation Metrics
+Accuracy, Precision, Recall, F1 Score
+
+ROC AUC used for model selection
+
+📈 Best Model Selection
+Random Forest selected based on highest ROC AUC
+
+Hyperparameters and performance logged using MLflow
+
+🔬 Model Registry
+Best model registered under:
+
+yaml
+Copy
+Edit
+Model Name: FraudDetectionModel
+Stage: Staging
+✅ Model saved both locally and in the MLflow Registry.
+
+🧪 Task 5 – Model Interpretability
+In line with Basel II interpretability requirements:
+
+Interpreted model predictions using SHAP
+
+Identified key features driving default predictions (e.g., low frequency, high recency)
+
+Plotted SHAP summary and force plots to visualize:
+
+Global feature importance
+
+Per-customer risk explanations
+
+✅ Interpretability analysis helps build stakeholder trust and regulatory compliance.
+
+🌐 Task 6 – Model Deployment and Continuous Integration
+✅ FastAPI Deployment
+Developed REST API using FastAPI in src/api/main.py
+
+Exposed /predict endpoint to return customer risk probability
+
+Validated requests and responses with Pydantic models
+
+📦 Dockerized Service
+Dockerfile and docker-compose setup:
+
+Runs the FastAPI app via uvicorn
+
+Exposes the service on localhost:8000
+
+bash
+Copy
+Edit
+docker-compose up --build
+⚙️ CI/CD Pipeline with GitHub Actions
+Configured GitHub Actions workflow in .github/workflows/ci.yml
+
+Workflow includes:
+
+flake8 linter to check code style
+
+pytest to run unit tests
+
+Fails build on any style/test error
